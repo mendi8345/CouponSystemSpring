@@ -1,15 +1,19 @@
 package com.couponSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.couponSystem.dao.AdminDAO;
 import com.couponSystem.dao.CompanyDAO;
 import com.couponSystem.exeptions.loginException;
 import com.couponSystem.javabeans.ClientType;
+import com.couponSystem.javabeans.Company;
 
 @Service
 public class CouponSystem {
+	@Autowired
+	ApplicationContext contex;
 
 	@Autowired
 	AdminDAO adminDAO;
@@ -38,8 +42,10 @@ public class CouponSystem {
 		case company:
 			loginStatus = this.companyDAO.loginCheck(name, password);
 			if (loginStatus == true) {
-
-				return this.adminDAO;
+				Company company = this.companyDAO.findByCompNameAndPassword(name, password);
+				this.companyDAO = this.contex.getBean(CompanyDAO.class);
+				this.companyDAO.setCompany(company);
+				return this.companyDAO;
 			}
 
 			// case customer:
@@ -50,6 +56,11 @@ public class CouponSystem {
 			// }
 		}
 		throw new loginException("Wrong name or password, please try again!");
+	}
+
+	private CouponClientFacade companyDAO(Company company) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 // System.out.println("companyDBDAO.login(name, password)" +

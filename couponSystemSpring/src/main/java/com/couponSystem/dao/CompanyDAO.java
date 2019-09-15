@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.couponSystem.CouponClientFacade;
-import com.couponSystem.exeptions.CouponExistsException;
 import com.couponSystem.javabeans.ClientType;
 import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Coupon;
@@ -25,19 +24,31 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 
 	@Autowired
 	private CouponRepository couponRepository;
+
 	private Company company;
 
-	public CompanyDAO(Company company) {
+	public Company getCompany() {
+		return this.company;
+	}
+
+	public void setCompany(Company company) {
 		this.company = company;
 	}
 
+	public CompanyDAO() {
+	}
+
 	@Override
-	public void createCoupon(Coupon coupon) throws CouponExistsException {
+	public synchronized void createCoupon(Coupon coupon) throws Exception {
 		if (CouponAlreadyExists(coupon.getTitle()) != true) {
+			System.out.println("this.company*********************" + this.company.getId());
+			Company company = this.companyRepository.findById(this.company.getId());
+			company.getCoupons().add(coupon);
 			this.couponRepository.save(coupon);
-		} else {
-			throw new CouponExistsException(
-					" coupon with name " + coupon.getTitle() + " already exist, please try another name");
+
+			// throw new CouponExistsException(
+			// " coupon with name " + coupon.getTitle() + " already exist, please try
+			// another name");
 
 		}
 	}
@@ -99,5 +110,9 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 	public CouponClientFacade login(String name, String password, ClientType clientType) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public Company findByCompNameAndPassword(String compName, String password) {
+		return this.companyRepository.findByCompNameAndPassword(compName, password);
 	}
 }
