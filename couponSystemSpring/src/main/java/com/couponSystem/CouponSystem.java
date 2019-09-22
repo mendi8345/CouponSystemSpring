@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.couponSystem.dao.AdminDAO;
 import com.couponSystem.dao.CompanyDAO;
+import com.couponSystem.dao.CustomerDAO;
 import com.couponSystem.exeptions.loginException;
 import com.couponSystem.javabeans.ClientType;
 import com.couponSystem.javabeans.Company;
+import com.couponSystem.javabeans.Customer;
 
 @Service
 public class CouponSystem {
@@ -20,6 +22,8 @@ public class CouponSystem {
 
 	@Autowired
 	CompanyDAO companyDAO;
+	@Autowired
+	CustomerDAO customerDAO;
 
 	// @Autowired
 	// CustomerS companyService;
@@ -43,25 +47,23 @@ public class CouponSystem {
 			loginStatus = this.companyDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Company company = this.companyDAO.findByCompNameAndPassword(name, password);
-				this.companyDAO = this.contex.getBean(CompanyDAO.class);
-				this.companyDAO.setCompany(company);
-				return this.companyDAO;
+				CompanyDAO companyDAO = this.contex.getBean(CompanyDAO.class);
+				companyDAO.setCompany(company);
+				return companyDAO;
 			}
 
-			// case customer:
-			// loginStatus = cu.loginCheck(name, password);
-			// if (loginStatus == true) {
-			//
-			// return (CouponClientFacade) companyService;
-			// }
+		case customer:
+			loginStatus = this.customerDAO.loginCheck(name, password);
+			if (loginStatus == true) {
+				Customer customer = this.customerDAO.findByCustNameAndPassword(name, password);
+				CustomerDAO customerDAO = this.contex.getBean(CustomerDAO.class);
+				customerDAO.setCustomer(customer);
+				return customerDAO;
+			}
 		}
 		throw new loginException("Wrong name or password, please try again!");
 	}
 
-	private CouponClientFacade companyDAO(Company company) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
 // System.out.println("companyDBDAO.login(name, password)" +
 // companyDBDAO.login(name, password));

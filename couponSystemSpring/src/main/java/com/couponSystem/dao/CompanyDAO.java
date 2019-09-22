@@ -7,23 +7,33 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.couponSystem.CouponClientFacade;
+import com.couponSystem.DateUtils;
+import com.couponSystem.exeptions.CouponExistsException;
+import com.couponSystem.exeptions.CouponNotAvailableException;
 import com.couponSystem.javabeans.ClientType;
 import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Coupon;
 import com.couponSystem.javabeans.CouponType;
+import com.couponSystem.javabeans.Income;
+import com.couponSystem.javabeans.IncomeType;
 import com.couponSystem.repository.CompanyRepository;
 import com.couponSystem.repository.CouponRepository;
+import com.couponSystem.repository.IncomeRepository;
 import com.couponSystem.service.CompanyService;
 
 @Service
 @Repository
 public class CompanyDAO implements CompanyService, CouponClientFacade {
 
+	private static final boolean CouponExistsException = false;
+
 	@Autowired
 	CompanyRepository companyRepository;
 
 	@Autowired
 	private CouponRepository couponRepository;
+	@Autowired
+	private IncomeRepository incomeRepository;
 
 	private Company company;
 
@@ -39,28 +49,53 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 	}
 
 	@Override
-	public synchronized void createCoupon(Coupon coupon) throws Exception {
+	public void createCoupon(Coupon coupon) throws Exception {
+
 		if (CouponAlreadyExists(coupon.getTitle()) != true) {
-			System.out.println("this.company*********************" + this.company.getId());
 			Company company = this.companyRepository.findById(this.company.getId());
 			company.getCoupons().add(coupon);
 			this.couponRepository.save(coupon);
-
-			// throw new CouponExistsException(
-			// " coupon with name " + coupon.getTitle() + " already exist, please try
-			// another name");
-
+			Income income = new Income();
+			income.setId(this.company.getId());
+			income.setAmount(100.0);
+			income.setDescription(IncomeType.COMPANY_NEW_COUPON);
+			income.setDate(DateUtils.GetCurrentDate());
+			income.setName("Company " + company.getCompName());
+			this.incomeRepository.save(income);
+		} else {
+			throw new CouponExistsException(
+					" coupon with name " + coupon.getTitle() + " already exist, please tryanother name");
 		}
 	}
 
 	@Override
 	public void removeCoupon(long id) throws Exception {
-		this.couponRepository.delete(id);
+		// List<Coupon> coupons = getCompCoupons();
+		// for (Coupon c : coupons) {
+		// System.out.println("12345678910");
+		// if (c.getId() == id) {
+		// this.company.getCoupons().remove(c);
+		// break;
+		// }
+		// }
+		Coupon coupon = this.couponRepository.findById(id);
+
+		this.company.getCoupons().remove(coupon);
+
+		this.couponRepository.delete(coupon);
+
 	}
 
 	@Override
 	public void updateCoupon(Coupon coupon) throws Exception {
 		this.couponRepository.save(coupon);
+		Income income = new Income();
+		income.setId(this.company.getId());
+		income.setAmount(10.0);
+		income.setDescription(IncomeType.COMPANY_UPDATE_COUPON);
+		income.setDate(DateUtils.GetCurrentDate());
+		income.setName("Company " + this.company.getCompName());
+		this.incomeRepository.save(income);
 	}
 
 	@Override
@@ -71,14 +106,25 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 
 	@Override
 	public List<Coupon> getCompCoupons() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		Company company = this.companyRepository.getOne(this.company.getId());
+		if (company != null) {
+			List<Coupon> coupons = company.getCoupons();
+			if (coupons != null) {
+				return coupons;
+			} else {
+				throw new CouponNotAvailableException("This company doesn't have any coupons");
+			}
+		} else {
+			throw new Exception("This company doesn't exist");
+		}
 	}
 
 	@Override
 	public List<Coupon> getCouponsByType(CouponType couponType) throws Exception {
 		List<Coupon> coupons = getCompCoupons();
+		System.out.println(coupons.toString());
 		for (Coupon c : coupons) {
+			System.out.println("12345678910");
 			if (c.getCouponType() != couponType) {
 				coupons.remove(c);
 			}

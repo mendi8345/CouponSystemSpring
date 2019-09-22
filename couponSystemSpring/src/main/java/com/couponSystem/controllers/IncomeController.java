@@ -29,9 +29,9 @@ public class IncomeController {
 		return result;
 	}
 
-	@GetMapping("/getAllIncome")
-	public ResponseEntity<List<Income>> getAllIncome() {
-		ResponseEntity<List<Income>> result = new ResponseEntity<List<Income>>(this.incomeService.getAllIncome(),
+	@GetMapping("/viewAllIncome")
+	public ResponseEntity<List<Income>> viewAllIncome() {
+		ResponseEntity<List<Income>> result = new ResponseEntity<List<Income>>(this.incomeService.viewAllIncome(),
 				HttpStatus.OK);
 		return result;
 	}

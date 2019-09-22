@@ -8,7 +8,7 @@ public interface IncomeService {
 
 	public void createIncome(Income income);
 
-	public List<Income> getAllIncome();
-
 	public Income getIncome(long id);
+
+	public List<Income> viewAllIncome();
 }

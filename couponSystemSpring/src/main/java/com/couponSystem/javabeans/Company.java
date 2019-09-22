@@ -2,6 +2,8 @@ package com.couponSystem.javabeans;
 
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -85,6 +87,8 @@ public class Company {
 		return "Company [id=" + this.id + ", compName=" + this.compName + ", password=" + this.password + ", email="
 				+ this.email + "]";
 	}
+
+	@Access(AccessType.PROPERTY)
 
 	@OneToMany
 	public List<Coupon> getCoupons() {

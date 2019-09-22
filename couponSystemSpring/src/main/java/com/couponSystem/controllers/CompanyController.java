@@ -75,9 +75,9 @@ public class CompanyController {
 		return result;
 	}
 
-	@GetMapping("/getCouponsByType/{type}")
-	public ResponseEntity<List<Coupon>> getCouponsByType(@PathVariable String type) throws Exception {
-		CouponType couponType = CouponType.valueOf(type);
+	@GetMapping("/getCouponsByType/{couponType}")
+	public ResponseEntity<List<Coupon>> getCouponsByType(@PathVariable CouponType couponType) throws Exception {
+		// CouponType couponType = CouponType.valueOf(couponType);
 		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
 				this.companyService.getCouponsByType(couponType), HttpStatus.OK);
 		return result;

@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Customer;
+import com.couponSystem.javabeans.Income;
 import com.couponSystem.service.AdminService;
+import com.couponSystem.service.IncomeService;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-
+	@Autowired
+	private IncomeService incomeService;
 	@Autowired
 	private AdminService adminService;
 
@@ -110,6 +113,13 @@ public class AdminController {
 	public ResponseEntity<List<Customer>> getAllCompamy() throws Exception {
 
 		ResponseEntity<List<Customer>> result = new ResponseEntity<List<Customer>>(this.adminService.getAllCustomer(),
+				HttpStatus.OK);
+		return result;
+	}
+
+	@GetMapping("/viewAllIncome")
+	public ResponseEntity<List<Income>> viewAllIncome() {
+		ResponseEntity<List<Income>> result = new ResponseEntity<List<Income>>(this.incomeService.viewAllIncome(),
 				HttpStatus.OK);
 		return result;
 	}

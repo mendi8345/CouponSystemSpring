@@ -22,7 +22,7 @@ public class IncomeDAO implements IncomeService {
 	}
 
 	@Override
-	public List<Income> getAllIncome() {
+	public List<Income> viewAllIncome() {
 		this.incomeRepository.findAll();
 		return this.incomeRepository.findAll();
 	}

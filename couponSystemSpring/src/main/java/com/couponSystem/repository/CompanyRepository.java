@@ -12,4 +12,5 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
 	// @Query("SELECT * FROM COMPANY WHERE compName=? AND password=?")
 	Company findByCompNameAndPassword(String compName, String password);
+
 }
