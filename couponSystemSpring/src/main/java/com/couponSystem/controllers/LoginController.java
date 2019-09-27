@@ -19,7 +19,6 @@ import com.couponSystem.javabeans.ClientType;
 @RestController
 @RequestMapping("Login")
 public class LoginController {
-
 	@Autowired
 	private Map<String, CouponClientFacade> tokens;
 

@@ -11,6 +11,8 @@ import com.couponSystem.exeptions.loginException;
 import com.couponSystem.javabeans.ClientType;
 import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Customer;
+import com.couponSystem.service.CompanyService;
+import com.couponSystem.service.CustomerService;
 
 @Service
 public class CouponSystem {
@@ -47,18 +49,19 @@ public class CouponSystem {
 			loginStatus = this.companyDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Company company = this.companyDAO.findByCompNameAndPassword(name, password);
-				CompanyDAO companyDAO = this.contex.getBean(CompanyDAO.class);
-				companyDAO.setCompany(company);
-				return companyDAO;
+				CompanyService companyService = this.contex.getBean(CompanyDAO.class);
+				companyService.setCompany(company);
+				return (CouponClientFacade) companyService;
 			}
 
 		case customer:
 			loginStatus = this.customerDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Customer customer = this.customerDAO.findByCustNameAndPassword(name, password);
-				CustomerDAO customerDAO = this.contex.getBean(CustomerDAO.class);
-				customerDAO.setCustomer(customer);
-				return customerDAO;
+				CustomerService customerService = this.contex.getBean(CustomerDAO.class);
+				customerService.setCustomer(customer);
+				System.out.println(customer.toString());
+				return (CouponClientFacade) customerService;
 			}
 		}
 		throw new loginException("Wrong name or password, please try again!");

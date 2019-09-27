@@ -1,5 +1,6 @@
 package com.couponSystem.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,6 @@ import com.couponSystem.service.CompanyService;
 @Repository
 public class CompanyDAO implements CompanyService, CouponClientFacade {
 
-	private static final boolean CouponExistsException = false;
-
 	@Autowired
 	CompanyRepository companyRepository;
 
@@ -41,6 +40,7 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 		return this.company;
 	}
 
+	@Override
 	public void setCompany(Company company) {
 		this.company = company;
 	}
@@ -70,17 +70,11 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 
 	@Override
 	public void removeCoupon(long id) throws Exception {
-		// List<Coupon> coupons = getCompCoupons();
-		// for (Coupon c : coupons) {
-		// System.out.println("12345678910");
-		// if (c.getId() == id) {
-		// this.company.getCoupons().remove(c);
-		// break;
-		// }
-		// }
-		Coupon coupon = this.couponRepository.findById(id);
+		List<Coupon> coupons = getCompCoupons();
 
-		this.company.getCoupons().remove(coupon);
+		Coupon coupon = this.couponRepository.findById(id);
+		coupons.remove(coupon);
+		this.company.setCoupons(coupons);
 
 		this.couponRepository.delete(coupon);
 
@@ -121,12 +115,15 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 
 	@Override
 	public List<Coupon> getCouponsByType(CouponType couponType) throws Exception {
-		List<Coupon> coupons = getCompCoupons();
-		System.out.println(coupons.toString());
-		for (Coupon c : coupons) {
+		List<Coupon> compCoupons = getCompCoupons();
+		List<Coupon> coupons = new ArrayList<>();
+		System.out.println(compCoupons.toString());
+		for (Coupon c : compCoupons) {
 			System.out.println("12345678910");
-			if (c.getCouponType() != couponType) {
-				coupons.remove(c);
+			if (c.getCouponType() == couponType) {
+
+				coupons.add(c);
+				System.out.println(c.toString());
 			}
 		}
 		return coupons;

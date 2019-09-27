@@ -2,6 +2,7 @@ package com.couponSystem.service;
 
 import java.util.List;
 
+import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Coupon;
 import com.couponSystem.javabeans.CouponType;
 
@@ -20,4 +21,6 @@ public interface CompanyService {
 	public List<Coupon> getCouponsByType(CouponType couponType) throws Exception;
 
 	public boolean loginCheck(String compName, String password) throws Exception;
+
+	public void setCompany(Company company);
 }
