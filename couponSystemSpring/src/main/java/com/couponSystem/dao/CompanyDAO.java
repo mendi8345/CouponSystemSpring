@@ -56,7 +56,6 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 			company.getCoupons().add(coupon);
 			this.couponRepository.save(coupon);
 			Income income = new Income();
-			income.setId(this.company.getId());
 			income.setAmount(100.0);
 			income.setDescription(IncomeType.COMPANY_NEW_COUPON);
 			income.setDate(DateUtils.GetCurrentDate());
@@ -84,7 +83,6 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 	public void updateCoupon(Coupon coupon) throws Exception {
 		this.couponRepository.save(coupon);
 		Income income = new Income();
-		income.setId(this.company.getId());
 		income.setAmount(10.0);
 		income.setDescription(IncomeType.COMPANY_UPDATE_COUPON);
 		income.setDate(DateUtils.GetCurrentDate());

@@ -41,11 +41,11 @@ public class CouponSystem {
 	public CouponClientFacade login(String name, String password, ClientType clientType) throws Exception {
 		boolean loginStatus;
 		switch (clientType) {
-		case admin:
+		case ADMIN:
 			if (name.equals("admin") && password.equals("1234")) {
 				return this.adminDAO;
 			}
-		case company:
+		case COMPANY:
 			loginStatus = this.companyDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Company company = this.companyDAO.findByCompNameAndPassword(name, password);
@@ -54,7 +54,7 @@ public class CouponSystem {
 				return (CouponClientFacade) companyService;
 			}
 
-		case customer:
+		case CUSTOMER:
 			loginStatus = this.customerDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Customer customer = this.customerDAO.findByCustNameAndPassword(name, password);

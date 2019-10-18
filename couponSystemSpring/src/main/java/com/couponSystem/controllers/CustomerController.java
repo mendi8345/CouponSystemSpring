@@ -73,8 +73,8 @@ public class CustomerController {
 		return result;
 	}
 
-	@GetMapping("/getCustomerByPrice/{price}/{token}")
-	public List<Coupon> getCustomerByPrice(@PathVariable double price, @PathVariable String token) throws Exception {
+	@GetMapping("/getCustomerByPrice/{price}")
+	public List<Coupon> getCustomerByPrice(@PathVariable double price) throws Exception {
 
 		try {
 			return this.customerService.getAllPurchasedCouponByPrice(price);

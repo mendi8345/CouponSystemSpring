@@ -3,12 +3,14 @@ package com.couponSystem.dao;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.couponSystem.javabeans.Income;
 import com.couponSystem.repository.IncomeRepository;
 import com.couponSystem.service.IncomeService;
 
+@Repository
 @Service
 public class IncomeDAO implements IncomeService {
 
@@ -23,13 +25,11 @@ public class IncomeDAO implements IncomeService {
 
 	@Override
 	public List<Income> viewAllIncome() {
-		this.incomeRepository.findAll();
 		return this.incomeRepository.findAll();
 	}
 
 	@Override
 	public Income getIncome(long id) {
-		this.incomeRepository.findOne(id);
 		return this.incomeRepository.findOne(id);
 	}
 }

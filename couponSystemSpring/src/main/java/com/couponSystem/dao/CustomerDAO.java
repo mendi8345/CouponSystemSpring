@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.couponSystem.CouponClientFacade;
 import com.couponSystem.DateUtils;
+import com.couponSystem.exeptions.CouponNotAvailableException;
 import com.couponSystem.javabeans.ClientType;
 import com.couponSystem.javabeans.Coupon;
 import com.couponSystem.javabeans.CouponType;
@@ -47,20 +48,18 @@ public class CustomerDAO implements CustomerService, CouponClientFacade {
 	}
 
 	@Override
-	public Customer purchaseCoupon(Coupon coupon) throws Exception {
+	public void purchaseCoupon(Coupon coupon) throws Exception {
 		try {
-			// if (!this.couponRepository.existsById(coupon.getId())) {
-			// throw new CouponNotAvailableException("This coupon doesn't exist, please try
-			// another one !");
-			// }
+			if (!this.couponRepository.existsById(coupon.getId())) {
+				throw new CouponNotAvailableException("This coupon doesn't exist, please try another one !");
+			}
 			//
-			// if (coupon.getAmount() <= 0) {
-			// throw new CouponNotAvailableException("Unable to purache coupon with
-			// amount");
-			// }
+			if (coupon.getAmount() <= 0) {
+				throw new CouponNotAvailableException("Unable to purache coupon with amount");
+			}
 			// if (coupon.getEndDate().getTime() <= DateUtils.GetCurrentDate().getTime()) {
 			// throw new CouponNotAvailableException("This coupon is out of stock");
-			// } System.out.println("11111111111111111");
+			// }
 			System.out.println("11111111111111111");
 
 			this.customer = this.customerRepository.findById(this.customer.getId());
@@ -71,7 +70,6 @@ public class CustomerDAO implements CustomerService, CouponClientFacade {
 			System.out.println("22222222222222");
 
 			Income income = new Income();
-			income.setId(this.customer.getId());
 			income.setAmount(coupon.getPrice());
 			income.setDate(DateUtils.GetCurrentDate());
 			income.setDescription(IncomeType.CUSTOMER_PURCHASE);
@@ -79,11 +77,10 @@ public class CustomerDAO implements CustomerService, CouponClientFacade {
 
 			income.setName("customer " + this.customer.getCustName());
 			this.incomeService.createIncome(income);
-			return this.customer;
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		return this.customer;
 
 	}
 
@@ -111,18 +108,26 @@ public class CustomerDAO implements CustomerService, CouponClientFacade {
 
 	@Override
 	public List<Coupon> getAllPurchasedCouponByPrice(double price) throws Exception {
-		List<Coupon> custCoupons = getAllPurchasedCoupon();
-		List<Coupon> coupons = new ArrayList<>();
-		System.out.println(custCoupons.toString());
-		for (Coupon c : custCoupons) {
-			System.out.println("12345678910");
-			if (c.getPrice() == price) {
+		try {
 
-				coupons.add(c);
-				System.out.println(c.toString());
+			List<Coupon> custCoupons = getAllPurchasedCoupon();
+			List<Coupon> coupons = new ArrayList<>();
+			System.out.println(custCoupons.toString());
+			for (Coupon c : custCoupons) {
+				System.out.println("12345678910");
+				if (c.getPrice() <= price) {
+
+					coupons.add(c);
+					System.out.println(c.toString());
+				}
 			}
+			return coupons;
+
+		} catch (Exception e) {
+			System.out.println("Failed to get all coupons by price " + e.getMessage());
 		}
-		return coupons;
+		return null;
+
 	}
 
 	@Override

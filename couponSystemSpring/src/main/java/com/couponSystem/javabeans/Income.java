@@ -21,17 +21,11 @@ public class Income {
 
 	private String name;
 
-	@Basic(optional = false)
-	@Column(nullable = false, name = "date")
 	private Date date;
 
-	@Basic(optional = false)
-	@Column(nullable = false, name = "description")
 	@Enumerated(EnumType.STRING)
 	private IncomeType description;
 
-	@Basic(optional = false)
-	@Column(nullable = false, name = "amount")
 	private double amount;
 
 	public Income(long id, String name, Date date, IncomeType description, double amount) {

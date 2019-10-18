@@ -37,18 +37,18 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/removeCompany/{id}")
-	public ResponseEntity removeCompany(@PathVariable long id) throws Exception {
+	public ResponseEntity<String> removeCompany(@PathVariable long id) throws Exception {
 		Company company = null;
 		company = this.adminService.getCompany(id);
 		if (company != null) {
 			this.adminService.removeCompany(id);
 		}
-		ResponseEntity<Company> result = new ResponseEntity<Company>(HttpStatus.OK);
+		ResponseEntity<String> result = new ResponseEntity<String>(company.toString(), HttpStatus.OK);
 		return result;
 	}
 
 	@PutMapping("/updateCompany/{id}")
-	public ResponseEntity updateCompany(@PathVariable long id, @RequestParam String email,
+	public ResponseEntity<Company> updateCompany(@PathVariable long id, @RequestParam String email,
 			@RequestParam String password) throws Exception {
 		Company company = null;
 		company = this.adminService.getCompany(id);
@@ -121,6 +121,12 @@ public class AdminController {
 	public ResponseEntity<List<Income>> viewAllIncome() {
 		ResponseEntity<List<Income>> result = new ResponseEntity<List<Income>>(this.incomeService.viewAllIncome(),
 				HttpStatus.OK);
+		return result;
+	}
+
+	@GetMapping("/getIncome/{id}")
+	public ResponseEntity<Income> getIncome(@PathVariable long id) {
+		ResponseEntity<Income> result = new ResponseEntity<Income>(this.incomeService.getIncome(id), HttpStatus.OK);
 		return result;
 	}
 }

@@ -10,7 +10,7 @@ public interface CustomerService {
 
 	public Customer getCustomer() throws Exception;
 
-	Customer purchaseCoupon(Coupon coupon) throws Exception;
+	public void purchaseCoupon(Coupon coupon) throws Exception;
 
 	public List<Coupon> getAllPurchasedCoupon() throws Exception;
 

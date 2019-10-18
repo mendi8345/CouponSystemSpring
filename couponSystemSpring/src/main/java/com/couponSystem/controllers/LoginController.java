@@ -27,14 +27,14 @@ public class LoginController {
 
 	@PostMapping("login")
 	public ResponseEntity<String> login(@RequestParam String name, @RequestParam String password,
-			@RequestParam String type) throws Exception {
+			@RequestParam String clientType) throws Exception {
 
 		CouponClientFacade facade = null;
 		String token = UUID.randomUUID().toString();
 		// long lastAccessed=System.currentTimeMillis();
 
 		try {
-			facade = this.couponSystem.login(name, password, ClientType.valueOf(type));
+			facade = this.couponSystem.login(name, password, ClientType.valueOf(clientType));
 			this.tokens.put(token, facade);
 			return new ResponseEntity<>(token, HttpStatus.OK);
 		} catch (loginException e) {
