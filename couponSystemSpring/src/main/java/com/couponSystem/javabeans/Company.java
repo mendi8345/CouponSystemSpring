@@ -2,10 +2,9 @@ package com.couponSystem.javabeans;
 
 import java.util.List;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -88,9 +87,7 @@ public class Company {
 				+ this.email + "]";
 	}
 
-	@Access(AccessType.PROPERTY)
-
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	public List<Coupon> getCoupons() {
 		return this.coupons;
 	}

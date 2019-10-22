@@ -3,6 +3,8 @@ package com.couponSystem.controllers;
 import java.sql.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.couponSystem.exeptions.InvalidTokenException;
 import com.couponSystem.javabeans.Coupon;
 import com.couponSystem.javabeans.CouponType;
+import com.couponSystem.service.AdminService;
 import com.couponSystem.service.CompanyService;
+import com.couponSystem.utils.Tokens;
 
 @RestController
 @RequestMapping("/company")
@@ -28,14 +33,30 @@ public class CompanyController {
 	@Autowired
 	private CompanyService companyService;
 
-	// public CompanyController(Company company) {
-	// this.company = company;
-	// };
+	@Resource
+	private Tokens tokens;
 
-	@PostMapping("/createCoupon")
-	public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon) throws Exception {
+	public AdminService getAdminService(String token) {
+		try {
+
+			if (this.tokens.getTokens().containsKey(token)) {
+				AdminService adminService = (AdminService) this.tokens.getTokens().get(token).getCouponClient();
+				return adminService;
+			} else {
+				throw new InvalidTokenException("Invalid token: ", token);
+			}
+		} catch (InvalidTokenException e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	@PostMapping("/createCoupon/{token}")
+	public ResponseEntity<String> createCoupon(@RequestBody Coupon coupon, @PathVariable String token)
+			throws Exception {
+
 		this.companyService.createCoupon(coupon);
-		ResponseEntity<Coupon> result = new ResponseEntity<Coupon>(coupon, HttpStatus.OK);
+		ResponseEntity<String> result = new ResponseEntity<String>(coupon.toString(), HttpStatus.OK);
 		return result;
 	}
 

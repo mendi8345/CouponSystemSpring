@@ -1,7 +1,8 @@
 package com.couponSystem.controllers;
 
-import java.util.Map;
 import java.util.UUID;
+
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,27 +16,39 @@ import com.couponSystem.CouponClientFacade;
 import com.couponSystem.CouponSystem;
 import com.couponSystem.exeptions.loginException;
 import com.couponSystem.javabeans.ClientType;
+import com.couponSystem.utils.Session;
+import com.couponSystem.utils.Tokens;
 
 @RestController
 @RequestMapping("Login")
 public class LoginController {
-	@Autowired
-	private Map<String, CouponClientFacade> tokens;
+	// @Autowired
+	// private Map<String, CouponClientFacade> tokens;
+	@Resource
+	private Tokens tokens;
 
 	@Autowired
 	CouponSystem couponSystem;
 
 	@PostMapping("login")
 	public ResponseEntity<String> login(@RequestParam String name, @RequestParam String password,
-			@RequestParam String clientType) throws Exception {
+			@RequestParam ClientType clientType) throws Exception {
 
+		Session session = new Session();
 		CouponClientFacade facade = null;
 		String token = UUID.randomUUID().toString();
+		long lastAccessed = System.currentTimeMillis();
 		// long lastAccessed=System.currentTimeMillis();
 
 		try {
-			facade = this.couponSystem.login(name, password, ClientType.valueOf(clientType));
-			this.tokens.put(token, facade);
+			facade = this.couponSystem.login(name, password, clientType);
+			session.setCouponClient(facade);
+			session.setLastAccessed(lastAccessed);
+			System.out.println(session.toString());
+			System.out.println(token);
+
+			this.tokens.getTokens().put(token, session);
+			System.out.println("token: " + token);
 			return new ResponseEntity<>(token, HttpStatus.OK);
 		} catch (loginException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
