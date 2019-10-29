@@ -1,4 +1,4 @@
-package com.couponSystem.dao;
+package com.couponSystem.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import com.couponSystem.service.IncomeService;
 
 @Service
 @Repository
-public class CustomerDAO implements CustomerService, CouponClientFacade {
+public class CustomerServiceImpl implements CustomerService, CouponClientFacade {
 
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -48,8 +48,9 @@ public class CustomerDAO implements CustomerService, CouponClientFacade {
 	}
 
 	@Override
-	public void purchaseCoupon(Coupon coupon) throws Exception {
+	public void purchaseCoupon(long id) throws Exception {
 		try {
+			Coupon coupon = this.couponRepository.findById(id);
 			if (!this.couponRepository.existsById(coupon.getId())) {
 				throw new CouponNotAvailableException("This coupon doesn't exist, please try another one !");
 			}
@@ -67,10 +68,12 @@ public class CustomerDAO implements CustomerService, CouponClientFacade {
 			coupons.add(coupon);
 			this.customer.setCoupons(coupons);
 			this.customerRepository.save(this.customer);
+			coupon.setAmount(coupon.getAmount() - 1);
 			System.out.println("22222222222222");
 
 			Income income = new Income();
 			income.setAmount(coupon.getPrice());
+			income.setClientId(this.customer.getId());
 			income.setDate(DateUtils.GetCurrentDate());
 			income.setDescription(IncomeType.CUSTOMER_PURCHASE);
 			System.out.println("22222222222222");

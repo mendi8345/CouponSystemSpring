@@ -1,9 +1,9 @@
 package com.couponSystem.controllers;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,72 +12,89 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.couponSystem.CouponClientFacade;
+import com.couponSystem.exeptions.InvalidTokenException;
 import com.couponSystem.javabeans.Coupon;
 import com.couponSystem.javabeans.CouponType;
-import com.couponSystem.javabeans.Customer;
-import com.couponSystem.repository.CouponRepository;
 import com.couponSystem.service.CustomerService;
+import com.couponSystem.utils.Tokens;
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
 
-	@Autowired
-	private Map<String, CouponClientFacade> tokens;
-	@Autowired
-	private CustomerService customerService;
-	@Autowired
-	private CouponRepository couponRepository;
+	@Resource
+	private Tokens tokens;
 
-	Customer customer;
+	public CustomerService getCustomerService(String token) {
+		try {
 
-	// private C exists(String token) {
-	// return LoginController.tokens.get(token);
-	// }
-
-	public CustomerService getCustomerService() {
-		return this.customerService;
+			if (this.tokens.getTokens().containsKey(token)) {
+				CustomerService customerService = (CustomerService) this.tokens.getTokens().get(token)
+						.getCouponClient();
+				return customerService;
+			} else {
+				throw new InvalidTokenException("Invalid token: ", token);
+			}
+		} catch (InvalidTokenException e) {
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 
-	@PostMapping("/purchaseCoupon/{id}")
-	public ResponseEntity<String> purchaseCoupon(@PathVariable long id) throws Exception {
+	@PostMapping("/purchaseCoupon/{id}/{token}")
+	public ResponseEntity<String> purchaseCoupon(@PathVariable long id, @PathVariable String token) throws Exception {
 
 		try {
-			Coupon coupon = this.couponRepository.findById(id);
-			this.customer = getCustomerService().getCustomer();
-			System.out.println(this.customer.toString() + "kljhhhhhhhhhhhhhhhhhh");
-			this.customerService.purchaseCoupon(coupon);
-
-			return new ResponseEntity<>("Customer purchaed coupon :  " + this.customerService.getCustomer().toString(),
+			CustomerService customerService = getCustomerService(token);
+			if (customerService == null) {
+				return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
+			}
+			customerService.purchaseCoupon(id);
+			return new ResponseEntity<String>("Customer purchaed coupon :  " + customerService.getCustomer().toString(),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage() + e.getStackTrace(), HttpStatus.UNAUTHORIZED);
 		}
 	}
 
-	@GetMapping("/getAllPurchasedCoupon/")
-	public ResponseEntity<List<Coupon>> getAllCustomerCoupons() throws Exception {
-		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
-				this.customerService.getAllPurchasedCoupon(), HttpStatus.OK);
+	@GetMapping("/getAllPurchasedCoupon/{token}")
+	public ResponseEntity<?> getAllCustomerCoupons(@PathVariable String token) throws Exception {
+		CustomerService customerService = getCustomerService(token);
+		if (customerService == null) {
+			return new ResponseEntity<String>("Invalid token to Customer: " + token, HttpStatus.UNAUTHORIZED);
+		}
+		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(customerService.getAllPurchasedCoupon(),
+				HttpStatus.OK);
 		return result;
 
 	}
 
-	@GetMapping("/getAllPurchasedCouponByType/{couponType}/")
-	public ResponseEntity<List<Coupon>> getAllPurchasedCouponByType(@PathVariable CouponType couponType)
+	@GetMapping("/getAllPurchasedCouponByType/{couponType}/{token}")
+	public ResponseEntity<List<Coupon>> getAllPurchasedCouponByType(@PathVariable CouponType couponType,
+			@PathVariable String token) throws Exception {
+		CustomerService customerService = getCustomerService(token);
+		if (customerService == null) {
+			// return new ResponseEntity<>("Invalid token to Admin: " + token,
+			// HttpStatus.UNAUTHORIZED);
+		}
+		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
+				customerService.getAllPurchasedCouponByType(couponType), HttpStatus.OK);
+		return result;
+	}
+
+	@GetMapping("/getCustomerByPrice/{price}/{token}")
+	public ResponseEntity<List<Coupon>> getCustomerByPrice(@PathVariable double price, @PathVariable String token)
 			throws Exception {
-		// CouponType couponType = CouponType.valueOf(couponType);
-		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
-				this.customerService.getAllPurchasedCouponByType(couponType), HttpStatus.OK);
-		return result;
-	}
 
-	@GetMapping("/getCustomerByPrice/{price}")
-	public List<Coupon> getCustomerByPrice(@PathVariable double price) throws Exception {
-
+		CustomerService customerService = getCustomerService(token);
+		if (customerService == null) {
+			// return new ResponseEntity<>("Invalid token to Admin: " + token,
+			// HttpStatus.UNAUTHORIZED);
+		}
 		try {
-			return this.customerService.getAllPurchasedCouponByPrice(price);
+			ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
+					customerService.getAllPurchasedCouponByPrice(price), HttpStatus.OK);
+			return result;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}

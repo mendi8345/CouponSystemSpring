@@ -4,15 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.couponSystem.dao.AdminDAO;
-import com.couponSystem.dao.CompanyDAO;
-import com.couponSystem.dao.CustomerDAO;
 import com.couponSystem.exeptions.loginException;
 import com.couponSystem.javabeans.ClientType;
 import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Customer;
 import com.couponSystem.service.CompanyService;
 import com.couponSystem.service.CustomerService;
+import com.couponSystem.serviceImpl.AdminServiceImpl;
+import com.couponSystem.serviceImpl.CompanyServiceImpl;
+import com.couponSystem.serviceImpl.CustomerServiceImpl;
 
 @Service
 public class CouponSystem {
@@ -20,12 +20,12 @@ public class CouponSystem {
 	ApplicationContext contex;
 
 	@Autowired
-	AdminDAO adminDAO;
+	AdminServiceImpl adminDAO;
 
 	@Autowired
-	CompanyDAO companyDAO;
+	CompanyServiceImpl companyDAO;
 	@Autowired
-	CustomerDAO customerDAO;
+	CustomerServiceImpl customerDAO;
 
 	// @Autowired
 	// CustomerS companyService;
@@ -49,7 +49,7 @@ public class CouponSystem {
 			loginStatus = this.companyDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Company company = this.companyDAO.findByCompNameAndPassword(name, password);
-				CompanyService companyService = this.contex.getBean(CompanyDAO.class);
+				CompanyService companyService = this.contex.getBean(CompanyServiceImpl.class);
 				companyService.setCompany(company);
 				return (CouponClientFacade) companyService;
 			}
@@ -58,7 +58,7 @@ public class CouponSystem {
 			loginStatus = this.customerDAO.loginCheck(name, password);
 			if (loginStatus == true) {
 				Customer customer = this.customerDAO.findByCustNameAndPassword(name, password);
-				CustomerService customerService = this.contex.getBean(CustomerDAO.class);
+				CustomerService customerService = this.contex.getBean(CustomerServiceImpl.class);
 				customerService.setCustomer(customer);
 				System.out.println(customer.toString());
 				return (CouponClientFacade) customerService;

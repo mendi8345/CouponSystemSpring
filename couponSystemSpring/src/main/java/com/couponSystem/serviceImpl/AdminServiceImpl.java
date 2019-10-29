@@ -1,4 +1,4 @@
-package com.couponSystem.dao;
+package com.couponSystem.serviceImpl;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import com.couponSystem.service.AdminService;
 
 @Service
 @Repository
-public class AdminDAO implements AdminService, CouponClientFacade {
+public class AdminServiceImpl implements AdminService, CouponClientFacade {
 
 	@Autowired
 	CompanyRepository companyRepository;

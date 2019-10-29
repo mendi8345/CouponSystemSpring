@@ -8,7 +8,9 @@ public interface IncomeService {
 
 	public void createIncome(Income income);
 
-	public Income getIncome(long id);
+	public double viewIncomeByCompany(long id) throws Exception;
+
+	public double viewIncomeByCustomer(long id);
 
 	public List<Income> viewAllIncome();
 }

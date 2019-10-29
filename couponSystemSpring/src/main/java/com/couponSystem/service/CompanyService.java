@@ -23,4 +23,6 @@ public interface CompanyService {
 	public boolean loginCheck(String compName, String password) throws Exception;
 
 	public void setCompany(Company company);
+
+	public List<Coupon> getCouponsByPrice(double price) throws Exception;
 }

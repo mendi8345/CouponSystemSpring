@@ -197,28 +197,38 @@ public class AdminController {
 		return result;
 	}
 
-	@GetMapping("/viewAllIncome{token}")
-	public ResponseEntity<List<Income>> viewAllIncome(@PathVariable String token) {
+	@GetMapping("/viewAllIncome/{token}")
+	public ResponseEntity<?> viewAllIncome(@PathVariable String token) {
+		System.out.println("000000000000000000000");
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
 			System.out.println("111111111111111");
-			// return new ResponseEntity<String>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		ResponseEntity<List<Income>> result = new ResponseEntity<List<Income>>(this.incomeService.viewAllIncome(),
 				HttpStatus.OK);
 		return result;
 	}
 
-	@GetMapping("/getIncome/{id}{token}")
-	public ResponseEntity<Income> getIncome(@PathVariable long id, @PathVariable String token) {
+	@GetMapping("/viewIncomeByCustomer/{id}/{token}")
+	public ResponseEntity<String> viewIncomeByCustomer(@PathVariable long id, @PathVariable String token) {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
 			System.out.println("111111111111111");
 			// return new ResponseEntity<String>("Invalid token to Admin: " + token,
 			// HttpStatus.UNAUTHORIZED);
 		}
-		ResponseEntity<Income> result = new ResponseEntity<Income>(this.incomeService.getIncome(id), HttpStatus.OK);
+		ResponseEntity<String> result = new ResponseEntity<String>(
+				"Total Customer Income = " + this.incomeService.viewIncomeByCustomer(id) + " shekels", HttpStatus.OK);
+		return result;
+	}
+
+	@GetMapping("/viewIncomeByCompany/{id}/{token}")
+	public ResponseEntity<String> viewIncomeByCompany(@PathVariable long id, @PathVariable String token)
+			throws Exception {
+
+		ResponseEntity<String> result = new ResponseEntity<String>(
+				"Total Company Income = " + this.incomeService.viewIncomeByCompany(id) + " shekels", HttpStatus.OK);
 		return result;
 	}
 }

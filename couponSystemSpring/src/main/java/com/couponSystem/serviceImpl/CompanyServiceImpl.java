@@ -1,4 +1,4 @@
-package com.couponSystem.dao;
+package com.couponSystem.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import com.couponSystem.service.CompanyService;
 
 @Service
 @Repository
-public class CompanyDAO implements CompanyService, CouponClientFacade {
+public class CompanyServiceImpl implements CompanyService, CouponClientFacade {
 
 	@Autowired
 	CompanyRepository companyRepository;
@@ -45,7 +45,7 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 		this.company = company;
 	}
 
-	public CompanyDAO() {
+	public CompanyServiceImpl() {
 	}
 
 	@Override
@@ -53,10 +53,19 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 
 		if (CouponAlreadyExists(coupon.getTitle()) != true) {
 			Company company = this.companyRepository.findById(this.company.getId());
-			company.getCoupons().add(coupon);
+			System.out.println("CompanyServiceImpl.0000000000000000000000");
 			this.couponRepository.save(coupon);
+
+			company.getCoupons().add(coupon);
+			System.out.println(coupon.toString());
+			System.out.println("CompanyServiceImpl.1111111111111111111");
+
+			this.companyRepository.save(company);
+			System.out.println("CompanyServiceImpl.2222222222222");
+
 			Income income = new Income();
 			income.setAmount(100.0);
+			income.setClientId(company.getId());
 			income.setDescription(IncomeType.COMPANY_NEW_COUPON);
 			income.setDate(DateUtils.GetCurrentDate());
 			income.setName("Company " + company.getCompName());
@@ -84,6 +93,7 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 		this.couponRepository.save(coupon);
 		Income income = new Income();
 		income.setAmount(10.0);
+		income.setClientId(this.company.getId());
 		income.setDescription(IncomeType.COMPANY_UPDATE_COUPON);
 		income.setDate(DateUtils.GetCurrentDate());
 		income.setName("Company " + this.company.getCompName());
@@ -155,5 +165,21 @@ public class CompanyDAO implements CompanyService, CouponClientFacade {
 
 	public Company findByCompNameAndPassword(String compName, String password) {
 		return this.companyRepository.findByCompNameAndPassword(compName, password);
+	}
+
+	@Override
+	public List<Coupon> getCouponsByPrice(double price) throws Exception {
+		List<Coupon> compCoupons = getCompCoupons();
+		List<Coupon> coupons = new ArrayList<>();
+		System.out.println(compCoupons.toString());
+		for (Coupon c : compCoupons) {
+			System.out.println("12345678910");
+			if (c.getPrice() >= price) {
+
+				coupons.add(c);
+				System.out.println(c.toString());
+			}
+		}
+		return coupons;
 	}
 }

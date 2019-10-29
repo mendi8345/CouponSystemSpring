@@ -18,6 +18,7 @@ import javax.persistence.Table;
 public class Income {
 
 	private long id;
+	private long clientId;
 
 	private String name;
 
@@ -28,12 +29,13 @@ public class Income {
 
 	private double amount;
 
-	public Income(long id, String name, Date date, IncomeType description, double amount) {
+	public Income(long id, String name, Date date, IncomeType description, double amount, long clientId) {
 		this.id = id;
 		this.name = name;
 		this.date = date;
 		this.description = description;
 		this.amount = amount;
+		this.clientId = clientId;
 	}
 
 	public Income() {
@@ -69,6 +71,16 @@ public class Income {
 		return this.amount;
 	}
 
+	@Basic(optional = false)
+	@Column(nullable = false)
+	public long getClientId() {
+		return this.clientId;
+	}
+
+	public void setClientId(long clientId) {
+		this.clientId = clientId;
+	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -89,4 +101,9 @@ public class Income {
 		this.amount = amount;
 	}
 
+	@Override
+	public String toString() {
+		return "Income [id=" + this.id + ", clientId=" + this.clientId + ", name=" + this.name + ", date=" + this.date
+				+ ", description=" + this.description + ", amount=" + this.amount + "]";
+	}
 }

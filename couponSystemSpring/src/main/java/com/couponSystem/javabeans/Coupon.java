@@ -19,7 +19,7 @@ public class Coupon {
 	private Date startDate;
 	private Date endDate;
 	private int amount;
-	private String messege;
+	private String message;
 
 	private CouponType couponType;
 	private double price;
@@ -35,7 +35,7 @@ public class Coupon {
 	/**
 	 * Full CTOR
 	 */
-	public Coupon(long id, String title, Date startDate, Date endDate, int amount, String messege,
+	public Coupon(long id, String title, Date startDate, Date endDate, int amount, String message,
 			CouponType couponType, double price, String image) {
 		this.id = id;
 		this.title = title;
@@ -43,7 +43,7 @@ public class Coupon {
 		this.endDate = endDate;
 		this.amount = amount;
 		this.couponType = couponType;
-		this.messege = messege;
+		this.message = message;
 		this.price = price;
 		this.image = image;
 	}
@@ -78,8 +78,8 @@ public class Coupon {
 	}
 
 	@Column(nullable = false)
-	public String getMessege() {
-		return this.messege;
+	public String getmessage() {
+		return this.message;
 	}
 
 	@Column(nullable = false)
@@ -94,7 +94,6 @@ public class Coupon {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, columnDefinition = "varchar(20)")
-
 	public CouponType getCouponType() {
 		return this.couponType;
 	}
@@ -119,8 +118,8 @@ public class Coupon {
 		this.amount = amount;
 	}
 
-	public void setMessege(String messege) {
-		this.messege = messege;
+	public void setmessage(String message) {
+		this.message = message;
 	}
 
 	public void setPrice(double price) {
@@ -138,7 +137,7 @@ public class Coupon {
 	@Override
 	public String toString() {
 		return "Coupon [id=" + this.id + ", title=" + this.title + ", startDate=" + this.startDate + ", endDate="
-				+ this.endDate + ", amount=" + this.amount + ", messege=" + this.messege + ", couponType="
+				+ this.endDate + ", amount=" + this.amount + ", message=" + this.message + ", couponType="
 				+ this.couponType + ", price=" + this.price + ", image=" + this.image + "]";
 	}
 }
