@@ -1,5 +1,7 @@
 package com.couponSystem;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import com.couponSystem.service.CustomerService;
 import com.couponSystem.serviceImpl.AdminServiceImpl;
 import com.couponSystem.serviceImpl.CompanyServiceImpl;
 import com.couponSystem.serviceImpl.CustomerServiceImpl;
+import com.couponSystem.utils.DailyTask;
 
 @Service
 public class CouponSystem {
@@ -20,17 +23,26 @@ public class CouponSystem {
 	ApplicationContext contex;
 
 	@Autowired
-	AdminServiceImpl adminDAO;
+	AdminServiceImpl adminServiceImpl;
 
 	@Autowired
-	CompanyServiceImpl companyDAO;
+	CompanyServiceImpl companyServiceImpl;
 	@Autowired
-	CustomerServiceImpl customerDAO;
+	CustomerServiceImpl customerServiceImpl;
 
-	// @Autowired
-	// CustomerS companyService;
+	@Autowired
+	private DailyTask dailyTask;
 
-	// private DailyTask dailyTask = new DailyTask();
+	@PostConstruct
+	public void init() throws Exception {
+		this.dailyTask.MyTask();
+	}
+
+	// // @PreDestroy
+	// // public void destroy() {
+	// // this.dailyTask.stopThread();
+	// // }
+
 	private static CouponSystem instance = new CouponSystem();
 
 	//
@@ -43,21 +55,21 @@ public class CouponSystem {
 		switch (clientType) {
 		case ADMIN:
 			if (name.equals("admin") && password.equals("1234")) {
-				return this.adminDAO;
+				return this.adminServiceImpl;
 			}
 		case COMPANY:
-			loginStatus = this.companyDAO.loginCheck(name, password);
+			loginStatus = this.companyServiceImpl.loginCheck(name, password);
 			if (loginStatus == true) {
-				Company company = this.companyDAO.findByCompNameAndPassword(name, password);
+				Company company = this.companyServiceImpl.findByCompNameAndPassword(name, password);
 				CompanyService companyService = this.contex.getBean(CompanyServiceImpl.class);
 				companyService.setCompany(company);
 				return (CouponClientFacade) companyService;
 			}
 
 		case CUSTOMER:
-			loginStatus = this.customerDAO.loginCheck(name, password);
+			loginStatus = this.customerServiceImpl.loginCheck(name, password);
 			if (loginStatus == true) {
-				Customer customer = this.customerDAO.findByCustNameAndPassword(name, password);
+				Customer customer = this.customerServiceImpl.findByCustNameAndPassword(name, password);
 				CustomerService customerService = this.contex.getBean(CustomerServiceImpl.class);
 				customerService.setCustomer(customer);
 				System.out.println(customer.toString());

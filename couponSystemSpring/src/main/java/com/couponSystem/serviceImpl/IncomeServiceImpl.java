@@ -20,7 +20,7 @@ public class IncomeServiceImpl implements IncomeService {
 	private IncomeRepository incomeRepository;
 
 	@Override
-	public void createIncome(Income income) {
+	public synchronized void createIncome(Income income) {
 		this.incomeRepository.save(income);
 
 	}

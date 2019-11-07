@@ -8,6 +8,8 @@ import com.couponSystem.javabeans.CouponType;
 
 public interface CompanyService {
 
+	public Company getCompany();
+
 	public void createCoupon(Coupon coupon) throws Exception;
 
 	public void removeCoupon(long id) throws Exception;
@@ -19,8 +21,6 @@ public interface CompanyService {
 	public List<Coupon> getCompCoupons() throws Exception;
 
 	public List<Coupon> getCouponsByType(CouponType couponType) throws Exception;
-
-	public boolean loginCheck(String compName, String password) throws Exception;
 
 	public void setCompany(Company company);
 

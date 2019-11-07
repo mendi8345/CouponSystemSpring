@@ -1,7 +1,7 @@
 package com.couponSystem.javabeans;
 
 public enum CouponType {
-	food, electric, leisure, vacation, sport
+	food, electric, hotels, vacation, sport
 	// food {
 	// @Override
 	// public String toString() {

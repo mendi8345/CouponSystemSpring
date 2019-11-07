@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.couponSystem.exeptions.InvalidTokenException;
+import com.couponSystem.javabeans.Company;
 import com.couponSystem.javabeans.Coupon;
 import com.couponSystem.javabeans.CouponType;
 import com.couponSystem.service.CompanyService;
+import com.couponSystem.service.IncomeService;
 import com.couponSystem.utils.Tokens;
 
 @RestController
@@ -27,6 +30,8 @@ import com.couponSystem.utils.Tokens;
 public class CompanyController {
 
 	// Company company;////
+	@Autowired
+	private IncomeService incomeService;
 
 	@Resource
 	private Tokens tokens;
@@ -67,10 +72,9 @@ public class CompanyController {
 		if (companyService == null) {
 			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
-		Coupon coupon = null;
-		coupon = companyService.getCoupon(id);
+
 		companyService.removeCoupon(id);
-		return new ResponseEntity<String>("coupon deleted  " + coupon, HttpStatus.OK);
+		return new ResponseEntity<String>("coupon with id " + id + " deleted Successfully ", HttpStatus.OK);
 	}
 
 	@PostMapping("/updateCoupon/{token}")
@@ -95,14 +99,20 @@ public class CompanyController {
 
 	@GetMapping("/getCoupon/{id}/{token}")
 	public ResponseEntity<?> getCouponById(@PathVariable long id, @PathVariable String token) throws Exception {
-		CompanyService companyService = getCompanyService(token);
-		if (companyService == null) {
-			ResponseEntity<String> result = new ResponseEntity<String>(
-					"This company does not have a coupon with this ID", HttpStatus.UNAUTHORIZED);
+		try {
+			CompanyService companyService = getCompanyService(token);
+			if (companyService == null) {
+				System.out.println();
+				ResponseEntity<String> result1 = new ResponseEntity<String>(
+						"This company does not have a coupon with this ID", HttpStatus.UNAUTHORIZED);
+				return result1;
+			}
+			ResponseEntity<Coupon> result = new ResponseEntity<Coupon>(companyService.getCoupon(id), HttpStatus.OK);
 			return result;
+		} catch (Exception e) {
 		}
-		ResponseEntity<Coupon> result = new ResponseEntity<Coupon>(companyService.getCoupon(id), HttpStatus.OK);
-		return result;
+		return null;
+
 	}
 
 	@GetMapping("/getCompCoupons/{token}")
@@ -119,13 +129,11 @@ public class CompanyController {
 	}
 
 	@GetMapping("/getCouponsByType/{couponType}/{token}")
-	public ResponseEntity<List<Coupon>> getCouponsByType(@PathVariable CouponType couponType,
-			@PathVariable String token) throws Exception {
-		// CouponType couponType = CouponType.valueOf(couponType);
+	public ResponseEntity<?> getCouponsByType(@PathVariable CouponType couponType, @PathVariable String token)
+			throws Exception {
 		CompanyService companyService = getCompanyService(token);
 		if (companyService == null) {
-			// return new ResponseEntity<>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
 				companyService.getCouponsByType(couponType), HttpStatus.OK);
@@ -133,16 +141,29 @@ public class CompanyController {
 	}
 
 	@GetMapping("/getCouponsByPrice/{price}/{token}")
-	public ResponseEntity<List<Coupon>> getCouponsByPrice(@PathVariable double price, @PathVariable String token)
+	public ResponseEntity<?> getCouponsByPrice(@PathVariable double price, @PathVariable String token)
 			throws Exception {
 		// CouponType couponType = CouponType.valueOf(couponType);
 		CompanyService companyService = getCompanyService(token);
 		if (companyService == null) {
-			// return new ResponseEntity<>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(companyService.getCouponsByPrice(price),
 				HttpStatus.OK);
+		return result;
+	}
+
+	@GetMapping("/viewIncomeByCompany/{token}")
+	public ResponseEntity<String> viewIncomeByCompany(@PathVariable String token) throws Exception {
+		CompanyService companyService = getCompanyService(token);
+		if (companyService == null) {
+			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
+		}
+		Company company = companyService.getCompany();
+		ResponseEntity<String> result = new ResponseEntity<String>(
+				"Total Company Income = " + this.incomeService.viewIncomeByCompany(company.getId()) + " shekels",
+				HttpStatus.OK);
+
 		return result;
 	}
 }

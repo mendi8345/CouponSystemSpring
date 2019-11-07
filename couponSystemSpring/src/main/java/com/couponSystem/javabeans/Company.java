@@ -2,6 +2,7 @@ package com.couponSystem.javabeans;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -87,7 +88,7 @@ public class Company {
 				+ this.email + "]";
 	}
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	public List<Coupon> getCoupons() {
 		return this.coupons;
 	}

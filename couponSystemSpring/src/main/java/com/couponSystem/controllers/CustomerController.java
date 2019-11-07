@@ -47,7 +47,7 @@ public class CustomerController {
 		try {
 			CustomerService customerService = getCustomerService(token);
 			if (customerService == null) {
-				return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<>("Invalid token to customer: " + token, HttpStatus.UNAUTHORIZED);
 			}
 			customerService.purchaseCoupon(id);
 			return new ResponseEntity<String>("Customer purchaed coupon :  " + customerService.getCustomer().toString(),
@@ -70,12 +70,11 @@ public class CustomerController {
 	}
 
 	@GetMapping("/getAllPurchasedCouponByType/{couponType}/{token}")
-	public ResponseEntity<List<Coupon>> getAllPurchasedCouponByType(@PathVariable CouponType couponType,
+	public ResponseEntity<?> getAllPurchasedCouponByType(@PathVariable CouponType couponType,
 			@PathVariable String token) throws Exception {
 		CustomerService customerService = getCustomerService(token);
 		if (customerService == null) {
-			// return new ResponseEntity<>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(
 				customerService.getAllPurchasedCouponByType(couponType), HttpStatus.OK);
@@ -83,13 +82,12 @@ public class CustomerController {
 	}
 
 	@GetMapping("/getCustomerByPrice/{price}/{token}")
-	public ResponseEntity<List<Coupon>> getCustomerByPrice(@PathVariable double price, @PathVariable String token)
+	public ResponseEntity<?> getCustomerByPrice(@PathVariable double price, @PathVariable String token)
 			throws Exception {
 
 		CustomerService customerService = getCustomerService(token);
 		if (customerService == null) {
-			// return new ResponseEntity<>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		try {
 			ResponseEntity<List<Coupon>> result = new ResponseEntity<List<Coupon>>(

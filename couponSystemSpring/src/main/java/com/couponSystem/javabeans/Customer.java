@@ -2,12 +2,11 @@ package com.couponSystem.javabeans;
 
 import java.util.List;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -41,7 +40,7 @@ public class Customer {
 	 * getters & setters
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
 	public long getId() {
 		return this.id;
 	}
@@ -73,8 +72,7 @@ public class Customer {
 		return "Customer [id=" + this.id + ", custName=" + this.custName + ", password=" + this.password + "]";
 	}
 
-	@Access(AccessType.PROPERTY)
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	public List<Coupon> getCoupons() {
 		return this.coupons;
 	}

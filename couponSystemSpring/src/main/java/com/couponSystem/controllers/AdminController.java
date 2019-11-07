@@ -45,6 +45,7 @@ public class AdminController {
 		} catch (InvalidTokenException e) {
 			System.out.println(e.getMessage());
 		}
+
 		return null;
 	}
 
@@ -56,7 +57,9 @@ public class AdminController {
 			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		adminService.createCompany(company);
-		return new ResponseEntity<>("company created  " + company, HttpStatus.OK);
+		ResponseEntity<String> result = new ResponseEntity<String>("company created  " + company.toString(),
+				HttpStatus.OK);
+		return result;
 	}
 
 	@DeleteMapping("/deleteCompany/{id}/{token}")
@@ -65,12 +68,11 @@ public class AdminController {
 		if (adminService == null) {
 			return new ResponseEntity<>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
-		Company company = null;
-		company = adminService.getCompany(id);
-		if (company != null) {
-			adminService.removeCompany(id);
-		}
-		ResponseEntity<String> result = new ResponseEntity<String>("company deleted  " + company, HttpStatus.OK);
+
+		adminService.removeCompany(id);
+
+		ResponseEntity<String> result = new ResponseEntity<String>("company with id " + id + " deleted Successfully ",
+				HttpStatus.OK);
 		return result;
 	}
 
@@ -82,32 +84,29 @@ public class AdminController {
 			System.out.println("111111111111111");
 			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
-		Company company = null;
-		System.out.println("2222222");
 
-		company = adminService.getCompany(id);
-		company.setEmail(email);
-		company.setPassword(password);
-		adminService.updateCompany(company);
-		ResponseEntity<String> result = new ResponseEntity<String>(company.toString(), HttpStatus.OK);
+		adminService.updateCompany(id, email, password);
+
+		ResponseEntity<String> result = new ResponseEntity<String>(adminService.getCompany(id).toString(),
+				HttpStatus.OK);
 		return result;
 	}
 
 	@GetMapping("/getCompany/{id}/{token}")
-	public ResponseEntity<String> getCompany(@PathVariable long id, @PathVariable String token) throws Exception {
+	public ResponseEntity<?> getCompany(@PathVariable long id, @PathVariable String token) throws Exception {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
 			System.out.println("111111111111111");
 			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		Company company = adminService.getCompany(id);
-		ResponseEntity<String> result = new ResponseEntity<String>(company.toString(), HttpStatus.OK);
+		ResponseEntity<Company> result = new ResponseEntity<Company>(company, HttpStatus.OK);
 		return result;
 
 	}
 
 	@GetMapping("/getAllCompanies/{token}")
-	public ResponseEntity<List<Company>> getAllCompanies(@PathVariable String token) throws Exception {
+	public ResponseEntity<?> getAllCompanies(@PathVariable String token) throws Exception {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
 			System.out.println("111111111111111");
@@ -140,15 +139,11 @@ public class AdminController {
 			System.out.println("111111111111111");
 			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
-
-		Customer customer = null;
-		customer = adminService.getCustomer(id);
-		if (customer != null) {
-			adminService.removeCustomer(id);
-		}
-		ResponseEntity<String> result = new ResponseEntity<String>("customer deleted  " + customer, HttpStatus.OK);
-
+		adminService.removeCustomer(id);
+		ResponseEntity<String> result = new ResponseEntity<String>("customer with id " + id + " deleted Successfully ",
+				HttpStatus.OK);
 		return result;
+
 	}
 
 	@PostMapping("/updateCustomer/{token}/")
@@ -156,40 +151,35 @@ public class AdminController {
 			@RequestParam String password) throws Exception {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
-			System.out.println("111111111111111");
 			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		Customer customer = null;
-		System.out.println("222222");
-
 		customer = adminService.getCustomer(id);
 		customer.setPassword(password);
 		adminService.updateCustomer(customer);
-		System.out.println("333333");
 
 		ResponseEntity<String> result = new ResponseEntity<String>(customer.toString(), HttpStatus.OK);
 		return result;
 	}
 
 	@GetMapping("/getCustomer/{id}/{token}")
-	public ResponseEntity<String> getCompamy(@PathVariable long id, @PathVariable String token) throws Exception {
+	public ResponseEntity<?> getCompamy(@PathVariable long id, @PathVariable String token) throws Exception {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
 			System.out.println("111111111111111");
 			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		Customer customer = adminService.getCustomer(id);
-		ResponseEntity<String> result = new ResponseEntity<String>(customer.toString(), HttpStatus.OK);
+		ResponseEntity<Customer> result = new ResponseEntity<Customer>(customer, HttpStatus.OK);
 		return result;
 	}
 
 	@GetMapping("/getAllCustomers/{token}")
-	public ResponseEntity<List<Customer>> getAllCompamy(@PathVariable String token) throws Exception {
+	public ResponseEntity<?> getAllCompamy(@PathVariable String token) throws Exception {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
 			System.out.println("111111111111111");
-			// return new ResponseEntity<String>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 
 		ResponseEntity<List<Customer>> result = new ResponseEntity<List<Customer>>(adminService.getAllCustomer(),
@@ -199,10 +189,8 @@ public class AdminController {
 
 	@GetMapping("/viewAllIncome/{token}")
 	public ResponseEntity<?> viewAllIncome(@PathVariable String token) {
-		System.out.println("000000000000000000000");
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
-			System.out.println("111111111111111");
 			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		ResponseEntity<List<Income>> result = new ResponseEntity<List<Income>>(this.incomeService.viewAllIncome(),
@@ -210,22 +198,24 @@ public class AdminController {
 		return result;
 	}
 
-	@GetMapping("/viewIncomeByCustomer/{id}/{token}")
+	@GetMapping("/viewIncomeByCustomerId/{id}/{token}")
 	public ResponseEntity<String> viewIncomeByCustomer(@PathVariable long id, @PathVariable String token) {
 		AdminService adminService = getAdminService(token);
 		if (adminService == null) {
-			System.out.println("111111111111111");
-			// return new ResponseEntity<String>("Invalid token to Admin: " + token,
-			// HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
 		}
 		ResponseEntity<String> result = new ResponseEntity<String>(
 				"Total Customer Income = " + this.incomeService.viewIncomeByCustomer(id) + " shekels", HttpStatus.OK);
 		return result;
 	}
 
-	@GetMapping("/viewIncomeByCompany/{id}/{token}")
+	@GetMapping("/viewIncomeByCompanyId/{id}/{token}")
 	public ResponseEntity<String> viewIncomeByCompany(@PathVariable long id, @PathVariable String token)
 			throws Exception {
+		AdminService adminService = getAdminService(token);
+		if (adminService == null) {
+			return new ResponseEntity<String>("Invalid token to Admin: " + token, HttpStatus.UNAUTHORIZED);
+		}
 
 		ResponseEntity<String> result = new ResponseEntity<String>(
 				"Total Company Income = " + this.incomeService.viewIncomeByCompany(id) + " shekels", HttpStatus.OK);

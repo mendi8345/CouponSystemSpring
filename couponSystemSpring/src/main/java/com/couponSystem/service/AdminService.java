@@ -11,7 +11,7 @@ public interface AdminService {
 
 	public void removeCompany(long id) throws Exception;
 
-	public void updateCompany(Company company) throws Exception;
+	void updateCompany(long id, String email, String password) throws Exception;
 
 	public Company getCompany(long id) throws Exception;
 

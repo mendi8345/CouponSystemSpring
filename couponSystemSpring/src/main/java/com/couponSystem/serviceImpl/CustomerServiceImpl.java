@@ -49,47 +49,47 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 
 	@Override
 	public void purchaseCoupon(long id) throws Exception {
-		try {
-			Coupon coupon = this.couponRepository.findById(id);
-			if (!this.couponRepository.existsById(coupon.getId())) {
-				throw new CouponNotAvailableException("This coupon doesn't exist, please try another one !");
-			}
-			//
-			if (coupon.getAmount() <= 0) {
-				throw new CouponNotAvailableException("Unable to purache coupon with amount");
-			}
-			// if (coupon.getEndDate().getTime() <= DateUtils.GetCurrentDate().getTime()) {
-			// throw new CouponNotAvailableException("This coupon is out of stock");
-			// }
-			System.out.println("11111111111111111");
 
-			this.customer = this.customerRepository.findById(this.customer.getId());
-			List<Coupon> coupons = getAllPurchasedCoupon();
-			coupons.add(coupon);
-			this.customer.setCoupons(coupons);
-			this.customerRepository.save(this.customer);
-			coupon.setAmount(coupon.getAmount() - 1);
-			System.out.println("22222222222222");
-
-			Income income = new Income();
-			income.setAmount(coupon.getPrice());
-			income.setClientId(this.customer.getId());
-			income.setDate(DateUtils.GetCurrentDate());
-			income.setDescription(IncomeType.CUSTOMER_PURCHASE);
-			System.out.println("22222222222222");
-
-			income.setName("customer " + this.customer.getCustName());
-			this.incomeService.createIncome(income);
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+		Coupon coupon = this.couponRepository.findById(id);
+		if (!this.couponRepository.existsById(coupon.getId())) {
+			throw new CouponNotAvailableException("This coupon doesn't exist, please try another one !");
 		}
+		//
+		if (coupon.getAmount() <= 0) {
+			throw new CouponNotAvailableException("Unable to purache coupon with amount");
+		}
+		// if (coupon.getEndDate().getTime() <= DateUtils.GetCurrentDate().getTime()) {
+		// throw new CouponNotAvailableException("This coupon is out of stock");
+		// }
+
+		// if (CouponAlreadyExists(coupon)) {
+		// System.out.println("000000000000000000000000");
+		// throw new CouponExistsException("this coupon allrady exist plese try anuther
+		// one");
+		// }
+		this.customer = this.customerRepository.findById(this.customer.getId());
+		List<Coupon> coupons = getAllPurchasedCoupon();
+		coupons.add(coupon);
+		this.customer.setCoupons(coupons);
+		this.customerRepository.save(this.customer);
+		coupon.setAmount(coupon.getAmount() - 1);
+		System.out.println("22222222222222");
+
+		Income income = new Income();
+		income.setAmount(coupon.getPrice());
+		income.setClientId(this.customer.getId());
+		income.setDate(DateUtils.GetCurrentDate());
+		income.setDescription(IncomeType.CUSTOMER_PURCHASE);
+		System.out.println("22222222222222");
+
+		income.setName("customer " + this.customer.getCustName());
+		this.incomeService.createIncome(income);
 
 	}
 
 	@Override
 	public List<Coupon> getAllPurchasedCoupon() throws Exception {
-
+		System.out.println("getAllPurchasedCoupon");
 		return this.customer.getCoupons();
 	}
 
@@ -151,8 +151,14 @@ public class CustomerServiceImpl implements CustomerService, CouponClientFacade 
 	}
 
 	public Customer findByCustNameAndPassword(String name, String password) {
-
 		return this.customerRepository.findByCustNameAndPassword(name, password);
 
+	}
+
+	public boolean CouponAlreadyExists(Coupon c) throws Exception {
+		if (getAllPurchasedCoupon().contains(c)) {
+			return true;
+		}
+		return false;
 	}
 }
